@@ -1,42 +1,27 @@
-<h1 align="center">✨ SaaS Code Editor - Next.js 15 ✨</h1>
+<h1 align="center">✨ SaaS Code Editor – Powered by Next.js 15 ✨</h1>
 
-![Demo App](/public/screenshot-for-readme.png)
+---
 
-[Watch Full Tutorial on Youtube](https://youtu.be/fGkRQgf6Scw)
+A full-featured, modern SaaS code editor built with the latest web technologies. Designed for developers who want a fast, intuitive, and collaborative coding experience in the browser.
 
-Highlights:
+Whether you're experimenting with code, sharing snippets with the community, or managing a Pro-tier SaaS business, this project is built to scale and impress.
 
-- 🚀 Tech stack: Next.js 15 + Convex + Clerk + TypeScript
-- 💻 Online IDE with multi-language support (10 languages)
-- 🎨 Customizable experience with 5 VSCode themes
-- ✨ Smart output handling with Success & Error states
-- 💎 Flexible pricing with Free & Pro plans
-- 🤝 Community-driven code sharing system
-- 🔍 Advanced filtering & search capabilities
-- 👤 Personal profile with execution history tracking
-- 📊 Comprehensive statistics dashboard
-- ⚙️ Customizable font size controls
-- 🔗 Webhook integration support
-- 🌟 Professional deployment walkthrough
+---
 
-### Setup .env file
+### 🚀 Tech Highlights
 
-```js
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
-CLERK_SECRET_KEY=
-CONVEX_DEPLOYMENT=
-NEXT_PUBLIC_CONVEX_URL=
-```
+- ⚙️ **Framework**: Built with Next.js 15, Convex, Clerk, and TypeScript
+- 💻 **Multi-language Support**: Run code in 10+ programming languages
+- 🎨 **Custom Themes**: Choose from 5 popular VSCode-style editor themes
+- ✨ **Smart Output Handling**: Display real-time success and error states
+- 💎 **SaaS-Ready Pricing**: Supports both Free and Pro plans
+- 🌐 **Webhook Integration**: Extend functionality via secure webhooks
+- 🤝 **Community Features**: Share, search, and explore public code snippets
+- 👤 **User Profiles**: Track personal execution history
+- 📊 **Dashboard & Analytics**: Monitor usage with built-in stats
+- 🔍 **Advanced Search & Filters**: Quickly find relevant code by language or keyword
+- 🔧 **Editor Customization**: Adjust font sizes and preferences per user
 
-### Add these env to Convex Dashboard
+---
 
-```js
-CLERK_WEBHOOK_SECRET=
-LEMON_SQUEEZY_WEBHOOK_SECRET=
-```
-
-### Run the app
-
-```shell
-npm run dev
-```
+> Built with scalability, modern UX, and developer happiness in mind.
