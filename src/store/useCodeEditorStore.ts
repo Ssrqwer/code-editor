@@ -79,7 +79,11 @@ export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
 
       try {
         // Direct JDoodle API call - no mapping needed
-        const response = await fetch("https://api.jdoodle.com/v1/execute", {
+        // Use a free CORS proxy to bypass the browser restriction
+        const proxyUrl = "https://corsproxy.io/?";
+        const apiUrl = "https://api.jdoodle.com/v1/execute";
+
+        const response = await fetch(proxyUrl + encodeURIComponent(apiUrl), {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -88,7 +92,7 @@ export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
             clientId: "209b994e6a76b2c91281e0ce5afaad72",
             clientSecret: "b34783ae923b5a3c98a9805e4b1d6ac49238a98378e0f518711f83db2d5db357",
             script: code,
-            language: "python3", // HARDCODED for testing
+            language: "python3",
             versionIndex: "0",
             stdin: ""
           }),
