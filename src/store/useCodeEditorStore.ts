@@ -78,8 +78,23 @@ export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
       set({ isRunning: true, error: null, output: "" });
 
       try {
-        // Direct JDoodle API call - no mapping needed
-        // Use a free CORS proxy to bypass the browser restriction
+        // Language mapping for JDoodle
+        const languageMap: Record<string, { lang: string; version: string }> = {
+          'python': { lang: 'python3', version: '4' },
+          'javascript': { lang: 'nodejs', version: '4' },
+          'typescript': { lang: 'typescript', version: '4' },
+          'java': { lang: 'java', version: '4' },
+          'go': { lang: 'go', version: '1' },
+          'rust': { lang: 'rust', version: '4' },
+          'cpp': { lang: 'cpp17', version: '5' },
+          'csharp': { lang: 'csharp', version: '5' },
+          'ruby': { lang: 'ruby', version: '4' },
+          'swift': { lang: 'swift', version: '5' }
+        };
+
+        const jdoodleConfig = languageMap[language] || languageMap['python'];
+
+        // Use CORS proxy
         const proxyUrl = "https://corsproxy.io/?";
         const apiUrl = "https://api.jdoodle.com/v1/execute";
 
@@ -92,8 +107,8 @@ export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
             clientId: "209b994e6a76b2c91281e0ce5afaad72",
             clientSecret: "b34783ae923b5a3c98a9805e4b1d6ac49238a98378e0f518711f83db2d5db357",
             script: code,
-            language: "python3",
-            versionIndex: "0",
+            language: jdoodleConfig.lang,
+            versionIndex: jdoodleConfig.version,
             stdin: ""
           }),
         });
@@ -101,7 +116,7 @@ export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
         const data = await response.json();
         console.log("JDoodle response:", data);
 
-        // Simple output handling
+        // Handle response
         if (data.output) {
           set({ 
             output: data.output.trim(), 
@@ -121,9 +136,18 @@ export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
               error: data.error 
             }
           });
+        } else {
+          set({ 
+            error: "Unknown error",
+            executionResult: { 
+              code, 
+              output: "", 
+              error: "Unknown error" 
+            }
+          });
         }
       } catch (error) {
-        console.log("Error:", error);
+        console.log("Error running code:", error);
         set({ 
           error: "Failed to run code",
           executionResult: { 
