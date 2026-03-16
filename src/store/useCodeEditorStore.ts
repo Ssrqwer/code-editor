@@ -83,45 +83,68 @@ export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
       set({ isRunning: true, error: null, output: "" });
 
       try {
-        const runtime = LANGUAGE_CONFIG[language].pistonRuntime;
-        const response = await fetch("https://emkc.org/api/v2/piston/execute", {
+        // Hardcoded language mapping with proper typing
+        const languageMap: Record<string, string> = {
+          'javascript': 'nodejs',
+          'typescript': 'typescript',
+          'python': 'python3',
+          'java': 'java',
+          'go': 'go',
+          'rust': 'rust',
+          'cpp': 'cpp17',
+          'csharp': 'csharp',
+          'ruby': 'ruby',
+          'swift': 'swift'
+        };
+
+        // JDoodle API call
+        const response = await fetch("https://api.jdoodle.com/v1/execute", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            language: runtime.language,
-            version: runtime.version,
-            files: [{ content: code }],
+            clientId: "209b994e6a76b2c91281e0ce5afaad72",
+            clientSecret: "b34783ae923b5a3c98a9805e4b1d6ac49238a98378e0f518711f83db2d5db357",
+            script: code,
+            language: languageMap[language] || 'python3',
+            versionIndex: "0",
+            stdin: ""
           }),
         });
 
-        const data = await response.json();
+        interface JDoodleResponse {
+          output?: string;
+          error?: string;
+          statusCode?: number;
+          memory?: string;
+          cpuTime?: string;
+        }
 
-        console.log("data back from piston:", data);
+        const data: JDoodleResponse = await response.json();
 
-        // handle API-level erros
-        if (data.message) {
-          set({ error: data.message, executionResult: { code, output: "", error: data.message } });
+        console.log("data back from jdoodle:", data);
+
+        // Transform JDoodle response to match Piston format
+        const pistonFormattedData = {
+          run: {
+            output: data.output || data.error || '',
+            stderr: data.error || '',
+            stdout: data.output || '',
+            code: data.statusCode === 200 ? 0 : 1,
+            signal: null
+          }
+        };
+
+        // handle API-level errors
+        if (data.error) {
+          set({ error: data.error, executionResult: { code, output: "", error: data.error } });
           return;
         }
 
-        // handle compilation errors
-        if (data.compile && data.compile.code !== 0) {
-          const error = data.compile.stderr || data.compile.output;
-          set({
-            error,
-            executionResult: {
-              code,
-              output: "",
-              error,
-            },
-          });
-          return;
-        }
-
-        if (data.run && data.run.code !== 0) {
-          const error = data.run.stderr || data.run.output;
+        // handle execution errors
+        if (pistonFormattedData.run && pistonFormattedData.run.code !== 0) {
+          const error = pistonFormattedData.run.stderr || pistonFormattedData.run.output;
           set({
             error,
             executionResult: {
@@ -134,7 +157,7 @@ export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
         }
 
         // if we get here, execution was successful
-        const output = data.run.output;
+        const output = pistonFormattedData.run.output;
 
         set({
           output: output.trim(),
