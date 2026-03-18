@@ -106,14 +106,12 @@ export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
 
         const jdoodleConfig = languageMap[language] || languageMap['python'];
 
-        const response = await fetch("https://api.jdoodle.com/v1/execute", {
+        const response = await fetch("/api/execute", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            clientId: process.env.NEXT_PUBLIC_JDOODLE_CLIENT_ID!,
-            clientSecret: process.env.NEXT_PUBLIC_JDOODLE_CLIENT_SECRET!,
             script: code,
             language: jdoodleConfig.lang,
             versionIndex: jdoodleConfig.version,
