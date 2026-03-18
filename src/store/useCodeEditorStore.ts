@@ -4,11 +4,24 @@ import { create } from "zustand";
 import { Monaco } from "@monaco-editor/react";
 
 const getInitialState = () => {
-  // FIX: Always return defaults on server
+  // if we're on the server, return default values
+  if (typeof window === "undefined") {
+    return {
+      language: "javascript",
+      fontSize: 16,
+      theme: "vs-dark",
+    };
+  }
+
+  // if we're on the client, return values from local storage bc localStorage is a browser API.
+  const savedLanguage = localStorage.getItem("editor-language") || "javascript";
+  const savedTheme = localStorage.getItem("editor-theme") || "vs-dark";
+  const savedFontSize = localStorage.getItem("editor-font-size") || 16;
+
   return {
-    language: "javascript",
-    fontSize: 16,
-    theme: "vs-dark",
+    language: savedLanguage,
+    theme: savedTheme,
+    fontSize: Number(savedFontSize),
   };
 };
 
@@ -94,18 +107,14 @@ export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
 
         const jdoodleConfig = languageMap[language] || languageMap['python'];
 
-        // Use CORS proxy
-        const proxyUrl = "https://corsproxy.io/?";
-        const apiUrl = "https://api.jdoodle.com/v1/execute";
-
-        const response = await fetch(proxyUrl + encodeURIComponent(apiUrl), {
+        const response = await fetch("https://api.jdoodle.com/v1/execute", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            clientId: (process.env.JDOODLE_CLIENT_ID!),
-            clientSecret: (process.env.JDOODLE_CLIENT_SECRET!),
+            clientId: process.env.NEXT_PUBLIC_JDOODLE_CLIENT_ID!,
+            clientSecret: process.env.NEXT_PUBLIC_JDOODLE_CLIENT_SECRET!,
             script: code,
             language: jdoodleConfig.lang,
             versionIndex: jdoodleConfig.version,
