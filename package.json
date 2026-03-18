@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.61.3",
-    "@clerk/nextjs": "^5.7.5",
+    "@clerk/nextjs": "^7.0.5",
     "@clerk/types": "^4.101.20",
     "@monaco-editor/react": "^4.6.0",
     "convex": "^1.17.3",
