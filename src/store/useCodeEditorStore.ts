@@ -104,8 +104,8 @@ export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            clientId: process.env.JDOODLE_CLIENT_ID,
-            clientSecret: process.env.JDOODLE_CLIENT_SECRET,
+            clientId: process.env.JDOODLE_CLIENT_ID!,
+            clientSecret: process.env.JDOODLE_CLIENT_SECRET!,
             script: code,
             language: jdoodleConfig.lang,
             versionIndex: jdoodleConfig.version,
