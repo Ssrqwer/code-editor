@@ -32,6 +32,10 @@ function EditorPanel() {
     if (savedFontSize) setFontSize(parseInt(savedFontSize));
   }, [setFontSize]);
 
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/health`).catch(() => {});
+  }, []);
+
   const handleRefresh = () => {
     const defaultCode = LANGUAGE_CONFIG[language].defaultCode;
     if (editor) editor.setValue(defaultCode);

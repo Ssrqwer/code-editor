@@ -337,6 +337,7 @@ export default function AIAssistantPage() {
   };
 
   // ─── API Calls ────────────────────────────────────────────────────────────
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
   const callApi = useCallback(
     async (endpoint: string, body: Record<string, string>) => {
@@ -344,7 +345,7 @@ export default function AIAssistantPage() {
       setError(null);
       setResponse(null);
       try {
-        const res = await fetch(`http://localhost:8000/api/v1/${endpoint}`, {
+        const res = await fetch(`${API_BASE_URL}/${endpoint}`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
