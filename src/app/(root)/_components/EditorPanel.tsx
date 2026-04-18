@@ -6,14 +6,16 @@ import { Editor } from "@monaco-editor/react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { RotateCcwIcon, ShareIcon, SparklesIcon, TypeIcon } from "lucide-react";
-import { useClerk } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs"; // Changed from useClerk to useUser
 import { EditorPanelSkeleton } from "./EditorPanelSkeleton";
 import useMounted from "@/hooks/useMounted";
 import ShareSnippetDialog from "./ShareSnippetDialog";
-import router from "next/router";
+import { useRouter } from "next/navigation"; // Fixed: use next/navigation for App Router
+import toast from "react-hot-toast";
 
 function EditorPanel() {
-  const clerk = useClerk();
+  const { isLoaded, isSignedIn, user } = useUser(); // Use useUser hook instead
+  const router = useRouter(); // Fixed router import
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
   const { language, theme, fontSize, editor, setFontSize, setEditor } = useCodeEditorStore();
 
@@ -44,6 +46,29 @@ function EditorPanel() {
     const size = Math.min(Math.max(newSize, 12), 24);
     setFontSize(size);
     localStorage.setItem("editor-font-size", size.toString());
+  };
+
+  const handleAIAssistantClick = () => {
+    // Check if user is authenticated
+    if (!isSignedIn) {
+      toast.error("Please sign in to use the AI Assistant");
+      // Optionally redirect to sign-in page
+      // router.push("/sign-in");
+      return;
+    }
+    
+    // Navigate to AI assistant page
+    router.push('/ai-assistant');
+  };
+
+  const handleShareClick = () => {
+    // Check if user is authenticated before sharing
+    if (!isSignedIn) {
+      toast.error("Please sign in to share snippets");
+      return;
+    }
+    
+    setIsShareDialogOpen(true);
   };
 
   if (!mounted) return null;
@@ -91,35 +116,40 @@ function EditorPanel() {
               <RotateCcwIcon className="size-4 text-gray-400" />
             </motion.button>
 
+            {/* AI Assistant Button with auth check */}
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => router.push('/ai-assistant')}
+              onClick={handleAIAssistantClick}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg overflow-hidden 
                         bg-gradient-to-r from-purple-500 to-pink-600 
                         opacity-90 hover:opacity-100 transition-opacity"
             >
               <SparklesIcon className="size-4 text-white" />
-              <span className="text-sm font-medium text-white">AI Assistant</span>
+              <span className="text-sm font-medium text-white">
+                {isSignedIn ? "AI Assistant" : "Sign in for AI"}
+              </span>
             </motion.button>
 
-            {/* Share Button */}
+            {/* Share Button with auth check */}
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => setIsShareDialogOpen(true)}
+              onClick={handleShareClick}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-lg overflow-hidden bg-gradient-to-r
                from-blue-500 to-blue-600 opacity-90 hover:opacity-100 transition-opacity"
             >
               <ShareIcon className="size-4 text-white" />
-              <span className="text-sm font-medium text-white ">Share</span>
+              <span className="text-sm font-medium text-white">
+                {isSignedIn ? "Share" : "Sign in to Share"}
+              </span>
             </motion.button>
           </div>
         </div>
 
         {/* Editor  */}
         <div className="relative group rounded-xl overflow-hidden ring-1 ring-white/[0.05]">
-          {clerk.loaded && (
+          {isLoaded && ( // Changed from clerk.loaded to isLoaded
             <Editor
               height="600px"
               language={LANGUAGE_CONFIG[language].monacoLanguage}
@@ -151,11 +181,12 @@ function EditorPanel() {
             />
           )}
 
-          {!clerk.loaded && <EditorPanelSkeleton />}
+          {!isLoaded && <EditorPanelSkeleton />}
         </div>
       </div>
       {isShareDialogOpen && <ShareSnippetDialog onClose={() => setIsShareDialogOpen(false)} />}
     </div>
   );
 }
+
 export default EditorPanel;
