@@ -288,7 +288,7 @@ function Toast({
 
 export default function AIAssistantPage() {
   const router = useRouter();
-  const { language, getCode, setCode } = useCodeEditorStore();
+  const { language, code: zustandCode, setCode } = useCodeEditorStore();
 
   // Panel state
   const [selectedAction, setSelectedAction] = useState<ActionId | null>(null);
@@ -315,7 +315,7 @@ export default function AIAssistantPage() {
 
   // ─── Helpers ──────────────────────────────────────────────────────────────
 
-  const editorCode = getCode();
+  const editorCode = zustandCode;
   const activeCode = activeTab === "editor" ? editorCode : manualCode;
   const lineCount = editorCode.split("\n").length;
 

@@ -35,20 +35,23 @@ export const useCodeEditorStore = create<CodeEditorState>((set, get) => {
     error: null,
     editor: null,
     executionResult: null,
+    code: "",
 
-    getCode: () => get().editor?.getValue() || "",
+    getCode: () => get().editor?.getValue() || get().code || "",
 
-    setCode: (code: string) => {
+    setCode: (newCode: string) => {
       const { editor, language } = get();
       
-      // Update editor if it exists
-      if (editor) {
-        editor.setValue(code);
-      }
+      // 1. Save the string to Zustand so the AI page can read it
+      set({ code: newCode });
       
-      // Persist to localStorage
+      // 2. Only update the Monaco instance if the value is actually different.
+      // (If you skip this check, your cursor will jump to the end of the file on every keystroke!)
+      if (editor && editor.getValue() !== newCode) {
+        editor.setValue(newCode);
+      }
       if (typeof window !== "undefined") {
-        localStorage.setItem(`editor-code-${language}`, code);
+        localStorage.setItem(`editor-code-${language}`, newCode);
       }
     },
 

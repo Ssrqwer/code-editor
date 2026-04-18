@@ -17,7 +17,7 @@ function EditorPanel() {
   const { isLoaded, isSignedIn, user } = useUser(); // Use useUser hook instead
   const router = useRouter(); // Fixed router import
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
-  const { language, theme, fontSize, editor, setFontSize, setEditor } = useCodeEditorStore();
+  const { language, theme, fontSize, editor, setFontSize, setEditor, setCode } = useCodeEditorStore();
 
   const mounted = useMounted();
 
@@ -39,7 +39,12 @@ function EditorPanel() {
   };
 
   const handleEditorChange = (value: string | undefined) => {
-    if (value) localStorage.setItem(`editor-code-${language}`, value);
+    if (value !== undefined) {
+      // Save to localStorage
+      localStorage.setItem(`editor-code-${language}`, value);
+      // Push the raw string to Zustand so it survives the route change!
+      setCode(value); 
+    }
   };
 
   const handleFontSizeChange = (newSize: number) => {

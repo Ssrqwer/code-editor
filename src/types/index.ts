@@ -43,6 +43,7 @@ export interface CodeEditorState {
   isRunning: boolean;
   error: string | null;
   theme: string;
+  code: string;
   fontSize: number;
   editor: Monaco | null;
   executionResult: ExecutionResult | null;
